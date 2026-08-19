@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#111318">
     <title>Twemoji Sticker Editor</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="./styles.css?v=9">
+    <link rel="stylesheet" href="./styles.css?v=10">
     <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous" defer></script>
     <script src="./emoji-data.js?v=1" defer></script>
-    <script src="./app.js?v=7" defer></script>
+    <script src="./app.js?v=8" defer></script>
   </head>
   <body>
     <main class="app-shell">
@@ -33,7 +33,7 @@
           <button id="fitButton" type="button" title="表示を合わせる">⛶</button>
           <button id="undoButton" type="button" title="元に戻す">↶</button>
           <button id="redoButton" type="button" title="やり直す">↷</button>
-          <button id="clearButton" type="button" title="スタンプを消す">⌫</button>
+          <button id="clearButton" type="button" title="選択中のスタンプを削除">⌫</button>
         </div>
 
         <section class="control-group">
@@ -43,16 +43,6 @@
           </div>
           <div id="emojiCategories" class="emoji-categories" role="tablist" aria-label="スタンプカテゴリ"></div>
           <div id="emojiGrid" class="emoji-grid" aria-label="Twemojiスタンプ一覧"></div>
-        </section>
-
-        <section class="control-group">
-          <h2>選択中</h2>
-          <div class="toolbar" aria-label="スタンプ操作">
-            <button id="frontButton" type="button" title="前面へ">↑</button>
-            <button id="backButton" type="button" title="背面へ">↓</button>
-            <button id="duplicateButton" type="button" title="複製">⧉</button>
-            <button id="deleteButton" type="button" title="削除">×</button>
-          </div>
         </section>
 
         <button id="downloadButton" class="primary-action" type="button">PNGを書き出す</button>

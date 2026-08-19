@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "twemoji-sticker-editor-v9";
+const CACHE_NAME = "twemoji-sticker-editor-v10";
 const APP_SHELL = [
   "./",
   "./index.html",

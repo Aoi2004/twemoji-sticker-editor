@@ -21,6 +21,7 @@ const themeToggle = document.querySelector("#themeToggle");
 const themeLabel = document.querySelector("#themeLabel");
 const copyImageButton = document.querySelector("#copyImageButton");
 const pasteImageButton = document.querySelector("#pasteImageButton");
+const clearButton = document.querySelector("#clearButton");
 const MIN_STICKER_SIZE = 32;
 const ROTATE_HANDLE_OFFSET = 34;
 
@@ -288,9 +289,7 @@ function updateButtons() {
   document.querySelector("#downloadButton").disabled = !state.baseImage;
   copyImageButton.disabled = !state.baseImage;
   const hasSelection = Boolean(selectedSticker());
-  ["frontButton", "backButton", "duplicateButton", "deleteButton"].forEach((id) => {
-    document.querySelector(`#${id}`).disabled = !hasSelection;
-  });
+  clearButton.disabled = !hasSelection;
 }
 
 async function addSticker(emoji) {
@@ -546,51 +545,8 @@ document.querySelector("#redoButton").addEventListener("click", () => {
   updateButtons();
 });
 
-document.querySelector("#clearButton").addEventListener("click", () => {
-  state.stickers = [];
-  state.selectedId = null;
-  pushHistory();
-  syncControls();
-  render();
-});
-
-document.querySelector("#frontButton").addEventListener("click", () => {
-  const index = state.stickers.findIndex((sticker) => sticker.id === state.selectedId);
-  if (index < 0) return;
-  const [sticker] = state.stickers.splice(index, 1);
-  state.stickers.push(sticker);
-  pushHistory();
-  render();
-});
-
-document.querySelector("#backButton").addEventListener("click", () => {
-  const index = state.stickers.findIndex((sticker) => sticker.id === state.selectedId);
-  if (index < 0) return;
-  const [sticker] = state.stickers.splice(index, 1);
-  state.stickers.unshift(sticker);
-  pushHistory();
-  render();
-});
-
-document.querySelector("#duplicateButton").addEventListener("click", async () => {
-  const selected = selectedSticker();
-  if (!selected) return;
-  const img = await loadStickerImage(selected.emoji);
-  const copy = {
-    ...selected,
-    id: nextStickerId++,
-    x: selected.x + selected.size * 0.18,
-    y: selected.y + selected.size * 0.18,
-    image: img
-  };
-  state.stickers.push(copy);
-  state.selectedId = copy.id;
-  pushHistory();
-  syncControls();
-  render();
-});
-
-document.querySelector("#deleteButton").addEventListener("click", () => {
+clearButton.addEventListener("click", () => {
+  if (!selectedSticker()) return;
   state.stickers = state.stickers.filter((sticker) => sticker.id !== state.selectedId);
   state.selectedId = null;
   pushHistory();
