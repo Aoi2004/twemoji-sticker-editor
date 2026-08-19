@@ -13,8 +13,16 @@ Twitter/Twemoji風のスタンプを画像に重ねる、GitHub Pages向けの�
 
 ## GitHub Pages
 
-このフォルダをGitHubリポジトリに置き、Pagesの公開元をルートまたは `/docs` に設定してください。ビルドは不要です。
+公開版: https://aoi2004.github.io/twemoji-sticker-editor/
+
+リポジトリ: https://github.com/Aoi2004/twemoji-sticker-editor
+
+ビルドは不要です。
+
+## プライバシーと通信
+
+選択した画像の読み込み、スタンプ合成、PNG書き出しはすべてブラウザ内で行われ、画像ファイルはアプリのサーバーへ送信されません。アプリ本体はGitHub Pagesから配信され、Twemoji SVGは初回表示時にjsDelivrから取得されます。取得済みのアプリ本体とスタンプはService Workerでキャッシュされます。
 
 ## Twemoji
 
-スタンプ画像は jsDelivr 経由で `twitter/twemoji@14.0.3` のSVGアセットを利用します。絵文字一覧はアプリに同梱し、実際のSVGは画面に表示する分だけ遅延読み込みします。アプリ本体と一度表示したTwemojiはService Workerでキャッシュされるため、遅い回線でも再表示が軽くなります。最近使ったスタンプの一覧はブラウザのローカルストレージに保存されます。
+スタンプ画像は jsDelivr 経由で `twitter/twemoji@14.0.3` のSVGアセットを利用します。絵文字一覧はアプリに同梱し、実際のSVGは画面に表示する分だけ遅延読み込みします。最近使ったスタンプの一覧はブラウザのローカルストレージに保存されます。ライセンスとクレジットは [LICENSES.md](./LICENSES.md) を参照してください。

@@ -3,6 +3,7 @@
 const TWEMOJI_ASSET_BASE = "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.3/assets/svg/";
 const STICKER_CATEGORIES = (window.FULL_TWEMOJI_CATEGORIES ?? []).filter(({ stickers }) => stickers.length > 0);
 const RECENT_STICKERS_KEY = "twemoji-sticker-editor-recent-v1";
+const THEME_KEY = "twemoji-sticker-editor-theme-v1";
 const MAX_RECENT_STICKERS = 24;
 const ALL_STICKERS = STICKER_CATEGORIES.flatMap((category) => category.stickers);
 
@@ -16,6 +17,8 @@ const statusText = document.querySelector("#statusText");
 const fileName = document.querySelector("#fileName");
 const viewport = document.querySelector("#stageViewport");
 const zoomValue = document.querySelector("#zoomValue");
+const themeToggle = document.querySelector("#themeToggle");
+const themeLabel = document.querySelector("#themeLabel");
 const MIN_STICKER_SIZE = 32;
 const ROTATE_HANDLE_OFFSET = 34;
 
@@ -34,6 +37,28 @@ const state = {
 
 const imageCache = new Map();
 let nextStickerId = 1;
+
+function getInitialTheme() {
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === "light" || stored === "dark") return stored;
+  } catch {
+    // Use the system preference when browser storage is unavailable.
+  }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#111318" : "#f4f6f8";
+  themeToggle.checked = theme === "dark";
+  themeLabel.textContent = theme === "dark" ? "ダーク" : "ライト";
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {
+    // Theme switching remains available for the current session.
+  }
+}
 
 function loadRecentStickers() {
   try {
@@ -527,6 +552,7 @@ document.querySelector("#zoomInButton").addEventListener("click", () => {
 });
 
 emojiSearch.addEventListener("input", renderEmojiGrid);
+themeToggle.addEventListener("change", () => setTheme(themeToggle.checked ? "dark" : "light"));
 window.addEventListener("resize", () => {
   if (!state.baseImage) return;
   fitToViewport();
@@ -538,6 +564,7 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+setTheme(getInitialTheme());
 renderEmojiCategories();
 renderEmojiGrid();
 syncControls();

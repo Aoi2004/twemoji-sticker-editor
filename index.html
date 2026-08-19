@@ -6,18 +6,21 @@
     <meta name="theme-color" content="#111318">
     <title>Twemoji Sticker Editor</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="./styles.css?v=6">
+    <link rel="stylesheet" href="./styles.css?v=8">
     <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous" defer></script>
     <script src="./emoji-data.js?v=1" defer></script>
-    <script src="./app.js?v=5" defer></script>
+    <script src="./app.js?v=6" defer></script>
   </head>
   <body>
     <main class="app-shell">
       <aside class="panel tool-panel" aria-label="編集ツール">
         <div class="brand">
-          <div>
-            <h1>Twemoji Sticker Editor</h1>
-          </div>
+          <h1>Twemoji Sticker Editor</h1>
+          <label class="theme-control" for="themeToggle">
+            <span id="themeLabel">ダーク</span>
+            <input id="themeToggle" type="checkbox" role="switch" aria-label="テーマを切り替え">
+            <span class="theme-switch" aria-hidden="true"></span>
+          </label>
         </div>
 
         <label class="upload-zone" for="imageInput">
@@ -53,6 +56,15 @@
         </section>
 
         <button id="downloadButton" class="primary-action" type="button">PNGを書き出す</button>
+
+        <footer class="app-footer">
+          <p>画像の編集と書き出しは、このブラウザ内で完結します。画像ファイルはサーバーへ送信されません。</p>
+          <p>Twemojiスタンプは初回表示時にjsDelivrから取得します。</p>
+          <div class="app-links">
+            <a href="https://github.com/Aoi2004/twemoji-sticker-editor" target="_blank" rel="noreferrer">GitHubリポジトリ</a>
+            <a href="https://github.com/Aoi2004/twemoji-sticker-editor/blob/main/LICENSES.md" target="_blank" rel="noreferrer">ライセンスとクレジット</a>
+          </div>
+        </footer>
       </aside>
 
       <section class="stage-wrap" aria-label="編集キャンバス">
