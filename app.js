@@ -19,6 +19,8 @@ const viewport = document.querySelector("#stageViewport");
 const zoomValue = document.querySelector("#zoomValue");
 const themeToggle = document.querySelector("#themeToggle");
 const themeLabel = document.querySelector("#themeLabel");
+const copyImageButton = document.querySelector("#copyImageButton");
+const pasteImageButton = document.querySelector("#pasteImageButton");
 const MIN_STICKER_SIZE = 32;
 const ROTATE_HANDLE_OFFSET = 34;
 
@@ -284,6 +286,7 @@ function updateButtons() {
   document.querySelector("#undoButton").disabled = state.historyIndex <= 0;
   document.querySelector("#redoButton").disabled = state.historyIndex >= state.history.length - 1;
   document.querySelector("#downloadButton").disabled = !state.baseImage;
+  copyImageButton.disabled = !state.baseImage;
   const hasSelection = Boolean(selectedSticker());
   ["frontButton", "backButton", "duplicateButton", "deleteButton"].forEach((id) => {
     document.querySelector(`#${id}`).disabled = !hasSelection;
@@ -382,10 +385,11 @@ function setCanvasCursor(event) {
   }
 }
 
-imageInput.addEventListener("change", () => {
-  const file = imageInput.files?.[0];
-  if (!file) return;
-
+function loadBaseImage(file, displayName = file.name) {
+  if (!file?.type.startsWith("image/")) {
+    statusText.textContent = "画像ファイルを選択してください";
+    return;
+  }
   const reader = new FileReader();
   reader.onload = () => {
     const img = new Image();
@@ -397,7 +401,7 @@ imageInput.addEventListener("change", () => {
       state.history = [];
       state.historyIndex = -1;
       setCanvasSize(img.naturalWidth, img.naturalHeight);
-      fileName.textContent = file.name;
+      fileName.textContent = displayName;
       statusText.textContent = `${canvas.width}×${canvas.height}px`;
       fitToViewport();
       pushHistory();
@@ -407,7 +411,69 @@ imageInput.addEventListener("change", () => {
     img.src = reader.result;
   };
   reader.readAsDataURL(file);
+}
+
+imageInput.addEventListener("change", () => {
+  const file = imageInput.files?.[0];
+  if (file) loadBaseImage(file);
 });
+
+function canvasToPngBlob() {
+  const selectedId = state.selectedId;
+  state.selectedId = null;
+  render();
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      state.selectedId = selectedId;
+      render();
+      if (blob) resolve(blob);
+      else reject(new Error("PNGを書き出せませんでした"));
+    }, "image/png");
+  });
+}
+
+async function copyImageToClipboard() {
+  if (!state.baseImage) return;
+  if (!navigator.clipboard?.write || !window.ClipboardItem) {
+    statusText.textContent = "このブラウザは画像コピーに対応していません";
+    return;
+  }
+
+  try {
+    const blob = await canvasToPngBlob();
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+    statusText.textContent = "画像をクリップボードにコピーしました";
+  } catch {
+    statusText.textContent = "画像をコピーできませんでした。ブラウザの権限を確認してください";
+  }
+}
+
+function imageFileFromClipboardItem(item) {
+  const type = item.types.find((candidate) => candidate.startsWith("image/"));
+  if (!type) return null;
+  return item.getType(type).then((blob) => new File([blob], `clipboard-image.${type.split("/")[1] || "png"}`, { type }));
+}
+
+async function pasteImageFromClipboard() {
+  if (!navigator.clipboard?.read) {
+    statusText.textContent = "画像を貼り付けるには Cmd/Ctrl + V を使ってください";
+    return;
+  }
+
+  try {
+    const items = await navigator.clipboard.read();
+    for (const item of items) {
+      const file = await imageFileFromClipboardItem(item);
+      if (file) {
+        loadBaseImage(file, "クリップボードの画像");
+        return;
+      }
+    }
+    statusText.textContent = "クリップボードに画像がありません";
+  } catch {
+    statusText.textContent = "画像を貼り付けるには Cmd/Ctrl + V を使ってください";
+  }
+}
 
 canvas.addEventListener("pointerdown", (event) => {
   const point = getCanvasPoint(event);
@@ -541,6 +607,9 @@ document.querySelector("#downloadButton").addEventListener("click", () => {
   link.click();
 });
 
+copyImageButton.addEventListener("click", copyImageToClipboard);
+pasteImageButton.addEventListener("click", pasteImageFromClipboard);
+
 document.querySelector("#fitButton").addEventListener("click", fitToViewport);
 document.querySelector("#zoomOutButton").addEventListener("click", () => {
   state.zoom = Math.max(0.1, state.zoom - 0.1);
@@ -553,6 +622,13 @@ document.querySelector("#zoomInButton").addEventListener("click", () => {
 
 emojiSearch.addEventListener("input", renderEmojiGrid);
 themeToggle.addEventListener("change", () => setTheme(themeToggle.checked ? "dark" : "light"));
+window.addEventListener("paste", (event) => {
+  const item = [...(event.clipboardData?.items ?? [])].find((candidate) => candidate.type.startsWith("image/"));
+  const file = item?.getAsFile();
+  if (!file) return;
+  event.preventDefault();
+  loadBaseImage(file, "クリップボードの画像");
+});
 window.addEventListener("resize", () => {
   if (!state.baseImage) return;
   fitToViewport();

@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#111318">
     <title>Twemoji Sticker Editor</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="./styles.css?v=8">
+    <link rel="stylesheet" href="./styles.css?v=9">
     <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous" defer></script>
     <script src="./emoji-data.js?v=1" defer></script>
-    <script src="./app.js?v=6" defer></script>
+    <script src="./app.js?v=7" defer></script>
   </head>
   <body>
     <main class="app-shell">
@@ -56,9 +56,13 @@
         </section>
 
         <button id="downloadButton" class="primary-action" type="button">PNGを書き出す</button>
+        <div class="clipboard-actions" aria-label="クリップボード操作">
+          <button id="copyImageButton" type="button" title="編集結果を画像としてコピー">画像をコピー</button>
+          <button id="pasteImageButton" type="button" title="クリップボードの画像を読み込む">画像を貼り付け</button>
+        </div>
 
         <footer class="app-footer">
-          <p>画像の編集と書き出しは、このブラウザ内で完結します。画像ファイルはサーバーへ送信されません。</p>
+          <p>画像の編集、書き出し、コピー、貼り付けはこのブラウザ内で完結します。画像ファイルはサーバーへ送信されません。</p>
           <p>Twemojiスタンプは初回表示時にjsDelivrから取得します。</p>
           <div class="app-links">
             <a href="https://github.com/Aoi2004/twemoji-sticker-editor" target="_blank" rel="noreferrer">GitHubリポジトリ</a>
